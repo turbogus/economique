@@ -40,18 +40,27 @@ minetest.register_node("mini_economique:socle", {
 				end
 			else
 				local hud={{0.33,0.10,0,0},{0,0,0.33,0.10},{-0.33,-0.10,0,0},{0,0,-0.33,-0.10}}
+				local radians=(3.14/2)*(p-1)
+				local objet
 				--Premier ligne
 				holospwan({x=pos.x-hud[p][1],y=pos.y+0.33,z=pos.z-hud[p][3]},mitem1["name"])
-				minetest.env:add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
-				minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
-				local objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
+				objet = minetest.env:add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
+				objet:setyaw(radians)
+				objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
+				objet:setyaw(radians)
+				objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
 				objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
+				objet:setyaw(radians)
 				--Deuxieme ligne
 				holospwan({x=pos.x-hud[p][1],y=pos.y,z=pos.z-hud[p][3]},mitem2["name"])
-				minetest.env:add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
-				minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
+				objet = minetest.env:add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
+				objet:setyaw(radians)
+				objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
+				objet:setyaw(radians)
 				objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
 				objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
+				objet:setyaw(radians)
+				
 			end
 		else
 			if not(item == nil) then
@@ -88,7 +97,7 @@ minetest.register_entity("mini_economique:rotation", {
 		hp_max = 1,
 		physical = false,
 		collisionbox = {-0.15,-0.15,-0.15, 0.15,0.15,0.15},
-		visual = "sprite",
+		visual = "upright_sprite",
 		textures = {"economique_rotation.png"},
 		visual_size = {x=0.30, y=0.30},
 		is_visible = true,
@@ -126,7 +135,7 @@ minetest.register_entity("mini_economique:buy", {
 		hp_max = 1,
 		physical = false,
 		collisionbox = {-0.15,-0.15,-0.15, 0.15,0.15,0.15},
-		visual = "sprite",
+		visual = "upright_sprite",
 		textures = {"economique_buy.png"},
 		visual_size = {x=0.30, y=0.30},
 		is_visible = true,
@@ -165,7 +174,7 @@ for i=0,9 do
 			hp_max = 1,
 			physical = false,
 			collisionbox = {-0.15,-0.15,-0.15, 0.15,0.15,0.15},
-			visual = "sprite",
+			visual = "upright_sprite",
 			textures = {"economique_"..i..".png"},
 			visual_size = {x=0.30, y=0.30},
 			is_visible = true,
