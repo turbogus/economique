@@ -58,13 +58,19 @@ minetest.register_abm({
 	chance = 1,
 	action = function(pos, node)
 		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
-		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
-		if not(mitem2==nil) then
+		local menservice = minetest.env:get_meta(pos):get_int("enservice")
+		if not(menservice==0) and (os.difftime(os.time(),menservice)>30 or os.difftime(os.time(),menservice)<0) then
+			minetest.env:get_meta(pos):set_int("enservice", nil)
 			local pos = {x=pos.x,y=pos.y+1,z=pos.z}
 			local listeobj=minetest.env:get_objects_inside_radius(pos, 0.60)
-			if table.getn(listeobj)==nil then
-				holospwan(pos,mitem1["name"])
+			if table.getn(listeobj)>=1 then
+				for c=1,table.getn(listeobj) do
+					if not(listeobj[c]:is_player()) then
+						listeobj[c]:remove()
+					end
+				end
 			end
+			holospwan(pos,mitem1["name"])
 		end
 	end,
 })
@@ -87,12 +93,14 @@ minetest.register_node("mini_economique:socle", {
 		minetest.env:get_meta(pos):set_string("item1","")
 		minetest.env:get_meta(pos):set_string("item2","")
 		minetest.env:get_meta(pos):set_int("p", 1)
+		minetest.env:get_meta(pos):set_int("enservice", 0)
 	end,
 	on_punch = function(pos, node, puncher)
 		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
 		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
 		local item = puncher:get_wielded_item():to_table()
 		if not(mitem2 == nil) then
+			minetest.env:get_meta(pos):set_int("enservice", os.time())
 			affichage(pos)
 		else
 			if not(item == nil) then
@@ -191,6 +199,7 @@ minetest.register_entity("mini_economique:buy", {
 		local pos = self.poscube
 		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
 		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
+		minetest.env:get_meta(pos):set_int("enservice", os.time())
 		if clicker:get_inventory():contains_item("main",mitem2) then
 			clicker:get_inventory():remove_item("main", mitem2)
 			clicker:get_inventory():add_item("main", mitem1)
