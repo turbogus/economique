@@ -6,7 +6,7 @@ local function holospwan(pos, itemname)
 	return obj
 end
 
-function affichage (pos)
+local function affichage(pos)
 	local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
 	local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
 	local p = minetest.env:get_meta(pos):get_int("p")
@@ -24,29 +24,29 @@ function affichage (pos)
 	local objet
 	--Premier ligne
 	if not(mitem1==nil) then
-	holospwan({x=pos.x-hud[p][1],y=pos.y+0.33,z=pos.z-hud[p][3]},mitem1["name"])
-	objet = minetest.env:add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
-	objet:setyaw(radians)
-	objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
-	objet:setyaw(radians)
+		holospwan({x=pos.x-hud[p][1],y=pos.y+0.33,z=pos.z-hud[p][3]},mitem1["name"])
+		objet = minetest.env:add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
+		objet:setyaw(radians)
+		objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
+		objet:setyaw(radians)
 	end
-	if not(mitem2==nil) and not(mitem1==nil) then
-	objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
-	objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
-	objet:setyaw(radians)
+		if not(mitem2==nil) and not(mitem1==nil) then
+		objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
+		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
+		objet:setyaw(radians)
 	end
 	--Deuxieme ligne
 	if not(mitem2==nil) then
-	holospwan({x=pos.x-hud[p][1],y=pos.y,z=pos.z-hud[p][3]},mitem2["name"])
-	objet = minetest.env:add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
-	objet:setyaw(radians)
-	objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
-	objet:setyaw(radians)
+		holospwan({x=pos.x-hud[p][1],y=pos.y,z=pos.z-hud[p][3]},mitem2["name"])
+		objet = minetest.env:add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
+		objet:setyaw(radians)
+		objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
+		objet:setyaw(radians)
 	end
 	if mitem2==nil then
-	objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
-	objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
-	objet:setyaw(radians)
+		objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
+		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
+		objet:setyaw(radians)
 	end
 end
 
