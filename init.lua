@@ -96,23 +96,23 @@ minetest.register_node("mini_economique:socle", {
 		minetest.env:get_meta(pos):set_int("enservice", 0)
 	end,
 	on_punch = function(pos, node, puncher)
-		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
 		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
-		local item = puncher:get_wielded_item():to_table()
 		if not(mitem2 == nil) then
 			minetest.env:get_meta(pos):set_int("enservice", os.time())
 			affichage(pos)
-		else
-			if not(item == nil) then
-				if item["wear"] == 0 then
-					if mitem1 == nil then
-						minetest.env:get_meta(pos):set_string("item1",minetest.serialize(item))
-						affichage (pos)
-					elseif mitem2 == nil then
-						minetest.env:get_meta(pos):set_string("item2",minetest.serialize(item))
-						affichage (pos)
-					end
-				end
+		end
+	end,
+	on_rightclick = function(pos, node, clicker, itemstack)
+		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
+		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
+		local item = clicker:get_wielded_item():to_table()
+		if not(item == nil) and item["wear"] == 0 then
+			if mitem1 == nil then
+				minetest.env:get_meta(pos):set_string("item1",minetest.serialize(item))
+				affichage (pos)
+			elseif mitem2 == nil then
+				minetest.env:get_meta(pos):set_string("item2",minetest.serialize(item))
+				affichage (pos)
 			end
 		end
 	end,
