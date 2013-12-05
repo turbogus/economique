@@ -1,17 +1,17 @@
 --Function
 
 local function holospwan(pos, itemname)
-	local obj = minetest.env:add_entity(pos, "mini_economique:item")
+	local obj = minetest.add_entity(pos, "mini_economique:item")
 	obj:get_luaentity():set_item(itemname)
 	return obj
 end
 
 local function affichage(pos)
-	local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
-	local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
-	local p = minetest.env:get_meta(pos):get_int("p")
+	local mitem1 = minetest.deserialize(minetest.get_meta(pos):get_string("item1"))
+	local mitem2 = minetest.deserialize(minetest.get_meta(pos):get_string("item2"))
+	local p = minetest.get_meta(pos):get_int("p")
 	local pos = {x=pos.x,y=pos.y+1,z=pos.z}
-	local listeobj=minetest.env:get_objects_inside_radius(pos, 0.60)
+	local listeobj=minetest.get_objects_inside_radius(pos, 0.60)
 	if table.getn(listeobj)>=1 then
 		for c=1,table.getn(listeobj) do
 			if not(listeobj[c]:is_player()) then
@@ -25,26 +25,26 @@ local function affichage(pos)
 	--Premier ligne
 	if not(mitem1==nil) then
 		holospwan({x=pos.x-hud[p][1],y=pos.y+0.33,z=pos.z-hud[p][3]},mitem1["name"])
-		objet = minetest.env:add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
+		objet = minetest.add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
 		objet:setyaw(radians)
-		objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
+		objet = minetest.add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
 		objet:setyaw(radians)
 	end
 		if not(mitem2==nil) and not(mitem1==nil) then
-		objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
+		objet = minetest.add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
 		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
 		objet:setyaw(radians)
 	end
 	--Deuxieme ligne
 	if not(mitem2==nil) then
 		holospwan({x=pos.x-hud[p][1],y=pos.y,z=pos.z-hud[p][3]},mitem2["name"])
-		objet = minetest.env:add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
+		objet = minetest.add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
 		objet:setyaw(radians)
-		objet = minetest.env:add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
+		objet = minetest.add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
 		objet:setyaw(radians)
 	end
 	if mitem2==nil then
-		objet = minetest.env:add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
+		objet = minetest.add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
 		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
 		objet:setyaw(radians)
 	end
@@ -57,12 +57,12 @@ minetest.register_abm({
 	interval = 1,
 	chance = 1,
 	action = function(pos, node)
-		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
-		local menservice = minetest.env:get_meta(pos):get_int("enservice")
+		local mitem1 = minetest.deserialize(minetest.get_meta(pos):get_string("item1"))
+		local menservice = minetest.get_meta(pos):get_int("enservice")
 		if not(menservice==0) and (os.difftime(os.time(),menservice)>30 or os.difftime(os.time(),menservice)<0) then
-			minetest.env:get_meta(pos):set_int("enservice", nil)
+			minetest.get_meta(pos):set_int("enservice", nil)
 			local pos = {x=pos.x,y=pos.y+1,z=pos.z}
-			local listeobj=minetest.env:get_objects_inside_radius(pos, 0.60)
+			local listeobj=minetest.get_objects_inside_radius(pos, 0.60)
 			if table.getn(listeobj)>=1 then
 				for c=1,table.getn(listeobj) do
 					if not(listeobj[c]:is_player()) then
@@ -89,40 +89,40 @@ minetest.register_node("mini_economique:socle", {
 	groups = {dig_immediate=2},
 	legacy_wallmounted = true,
 	after_place_node = function(pos, placer)
-		minetest.env:get_meta(pos):set_string("player",placer:get_player_name())
-		minetest.env:get_meta(pos):set_string("item1","")
-		minetest.env:get_meta(pos):set_string("item2","")
-		minetest.env:get_meta(pos):set_int("p", 1)
-		minetest.env:get_meta(pos):set_int("enservice", 0)
+		minetest.get_meta(pos):set_string("player",placer:get_player_name())
+		minetest.get_meta(pos):set_string("item1","")
+		minetest.get_meta(pos):set_string("item2","")
+		minetest.get_meta(pos):set_int("p", 1)
+		minetest.get_meta(pos):set_int("enservice", 0)
 	end,
 	on_punch = function(pos, node, puncher)
-		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
+		local mitem2 = minetest.deserialize(minetest.get_meta(pos):get_string("item2"))
 		if not(mitem2 == nil) then
-			minetest.env:get_meta(pos):set_int("enservice", os.time())
+			minetest.get_meta(pos):set_int("enservice", os.time())
 			affichage(pos)
 		end
 	end,
 	on_rightclick = function(pos, node, clicker, itemstack)
-		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
-		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
+		local mitem1 = minetest.deserialize(minetest.get_meta(pos):get_string("item1"))
+		local mitem2 = minetest.deserialize(minetest.get_meta(pos):get_string("item2"))
 		local item = clicker:get_wielded_item():to_table()
 		if not(item == nil) and item["wear"] == 0 then
 			if mitem1 == nil then
-				minetest.env:get_meta(pos):set_string("item1",minetest.serialize(item))
+				minetest.get_meta(pos):set_string("item1",minetest.serialize(item))
 				affichage (pos)
 			elseif mitem2 == nil then
-				minetest.env:get_meta(pos):set_string("item2",minetest.serialize(item))
+				minetest.get_meta(pos):set_string("item2",minetest.serialize(item))
 				affichage (pos)
 			end
 		end
 	end,
 	can_dig = function(pos,player)
-		local mplayer = minetest.env:get_meta(pos):get_string("player")
+		local mplayer = minetest.get_meta(pos):get_string("player")
 		return mplayer==player:get_player_name() or mplayer==""
 	end,
 	on_destruct = function(pos)
 		local pos = {x=pos.x,y=pos.y+1,z=pos.z}
-		local listeobj=minetest.env:get_objects_inside_radius(pos, 0.60)
+		local listeobj=minetest.get_objects_inside_radius(pos, 0.60)
 		for c=1,table.getn(listeobj) do
 			if not(listeobj[c]:is_player()) then
 				listeobj[c]:remove()
@@ -159,11 +159,11 @@ minetest.register_entity("mini_economique:rotation", {
 	end,
 	on_rightclick = function(self, clicker)
 		local pos = self.poscube
-		local mp = minetest.env:get_meta(pos):get_int("p")
+		local mp = minetest.get_meta(pos):get_int("p")
 		if mp < 4 then
-			minetest.env:get_meta(pos):set_int("p",mp+1)
+			minetest.get_meta(pos):set_int("p",mp+1)
 		else
-			minetest.env:get_meta(pos):set_int("p",1)
+			minetest.get_meta(pos):set_int("p",1)
 		end
 		affichage(pos)
 	end,
@@ -197,9 +197,9 @@ minetest.register_entity("mini_economique:buy", {
 	end,
 	on_rightclick = function(self, clicker)
 		local pos = self.poscube
-		local mitem1 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item1"))
-		local mitem2 = minetest.deserialize(minetest.env:get_meta(pos):get_string("item2"))
-		minetest.env:get_meta(pos):set_int("enservice", os.time())
+		local mitem1 = minetest.deserialize(minetest.get_meta(pos):get_string("item1"))
+		local mitem2 = minetest.deserialize(minetest.get_meta(pos):get_string("item2"))
+		minetest.get_meta(pos):set_int("enservice", os.time())
 		if clicker:get_inventory():contains_item("main",mitem2) then
 			clicker:get_inventory():remove_item("main", mitem2)
 			clicker:get_inventory():add_item("main", mitem1)
