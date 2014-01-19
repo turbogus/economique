@@ -9,7 +9,7 @@ end
 local function affichage(pos)
 	local mitem1 = minetest.deserialize(minetest.get_meta(pos):get_string("item1"))
 	local mitem2 = minetest.deserialize(minetest.get_meta(pos):get_string("item2"))
-	local p = minetest.get_meta(pos):get_int("p")
+	local node = minetest.get_node(pos)
 	local pos = {x=pos.x,y=pos.y+1,z=pos.z}
 	local listeobj=minetest.get_objects_inside_radius(pos, 0.60)
 	if table.getn(listeobj)>=1 then
@@ -20,32 +20,38 @@ local function affichage(pos)
 		end
 	end
 	local hud={{0.33,0.10,0,0},{0,0,0.33,0.10},{-0.33,-0.10,0,0},{0,0,-0.33,-0.10}}
-	local radians=(math.pi/2)*(p-1)
+	
 	local objet
+	--Facedir 
+	
+	if node.param2==3 then
+		node.param2=1
+	elseif node.param2==1 then
+		node.param2=3
+	end
+	
+	local radians=(math.pi/2)*(node.param2)
+	
+	
 	--Premier ligne
 	if not(mitem1==nil) then
-		holospwan({x=pos.x-hud[p][1],y=pos.y+0.33,z=pos.z-hud[p][3]},mitem1["name"])
+		holospwan({x=pos.x-hud[node.param2+1][1],y=pos.y+0.33,z=pos.z-hud[node.param2+1][3]},mitem1["name"])
 		objet = minetest.add_entity({x=pos.x,y=pos.y+0.33,z=pos.z},"mini_economique:"..math.floor(mitem1["count"]/10).."")
 		objet:setyaw(radians)
-		objet = minetest.add_entity({x=pos.x+hud[p][2],y=pos.y+0.33,z=pos.z+hud[p][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
+		objet = minetest.add_entity({x=pos.x+hud[node.param2+1][2],y=pos.y+0.33,z=pos.z+hud[node.param2+1][4]},"mini_economique:"..mitem1["count"]-(math.floor(mitem1["count"]/10)*10).."")
 		objet:setyaw(radians)
 	end
 		if not(mitem2==nil) and not(mitem1==nil) then
-		objet = minetest.add_entity({x=pos.x+hud[p][1],y=pos.y+0.33,z=pos.z+hud[p][3]},"mini_economique:buy")
+		objet = minetest.add_entity({x=pos.x+hud[node.param2+1][1],y=pos.y+0.33,z=pos.z+hud[node.param2+1][3]},"mini_economique:buy")
 		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
 		objet:setyaw(radians)
 	end
 	--Deuxieme ligne
 	if not(mitem2==nil) then
-		holospwan({x=pos.x-hud[p][1],y=pos.y,z=pos.z-hud[p][3]},mitem2["name"])
+		holospwan({x=pos.x-hud[node.param2+1][1],y=pos.y,z=pos.z-hud[node.param2+1][3]},mitem2["name"])
 		objet = minetest.add_entity({x=pos.x,y=pos.y,z=pos.z},"mini_economique:"..math.floor(mitem2["count"]/10).."")
 		objet:setyaw(radians)
-		objet = minetest.add_entity({x=pos.x+hud[p][2],y=pos.y,z=pos.z+hud[p][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
-		objet:setyaw(radians)
-	end
-	if mitem2==nil then
-		objet = minetest.add_entity({x=pos.x+hud[p][1],y=pos.y,z=pos.z+hud[p][3]},"mini_economique:rotation")
-		objet:get_luaentity():set_item({x=pos.x,z=pos.z,y=pos.y-1})
+		objet = minetest.add_entity({x=pos.x+hud[node.param2+1][2],y=pos.y,z=pos.z+hud[node.param2+1][4]},"mini_economique:"..mitem2["count"]-(math.floor(mitem2["count"]/10)*10).."")
 		objet:setyaw(radians)
 	end
 end
@@ -83,7 +89,7 @@ minetest.register_node("mini_economique:socle", {
 	drawtype = "node",
 	tiles = {"wool_red.png", "wool_red.png", "default_tree.png"},
 	paramtype = "light",
-	paramtype2 = "wallmounted",
+	paramtype2 = "facedir",
 	sunlight_propagates = true,
 	walkable = true,
 	groups = {dig_immediate=2},
@@ -92,7 +98,6 @@ minetest.register_node("mini_economique:socle", {
 		minetest.get_meta(pos):set_string("player",placer:get_player_name())
 		minetest.get_meta(pos):set_string("item1","")
 		minetest.get_meta(pos):set_string("item2","")
-		minetest.get_meta(pos):set_int("p", 1)
 		minetest.get_meta(pos):set_int("enservice", 0)
 	end,
 	on_punch = function(pos, node, puncher)
@@ -114,7 +119,6 @@ minetest.register_node("mini_economique:socle", {
 				minetest.get_meta(pos):set_string("item2",minetest.serialize(item))
 				affichage (pos)
 			end
-		end
 	end,
 	can_dig = function(pos,player)
 		local mplayer = minetest.get_meta(pos):get_string("player")
@@ -128,44 +132,6 @@ minetest.register_node("mini_economique:socle", {
 				listeobj[c]:remove()
 			end
 		end
-	end,
-})
-
---Bouton rotation
-
-minetest.register_entity("mini_economique:rotation", {
-	initial_properties = {
-		hp_max = 1,
-		physical = false,
-		collisionbox = {-0.15,-0.15,-0.15, 0.15,0.15,0.15},
-		visual = "upright_sprite",
-		textures = {"economique_rotation.png"},
-		visual_size = {x=0.30, y=0.30},
-		is_visible = true,
-	},
-	poscube = {},
-	set_item = function(self, itemstring)
-		self.poscube = itemstring
-	end,
-	on_activate = function(self, staticdata)
-		self.poscube = minetest.deserialize(staticdata)
-		self.object:set_armor_groups({immortal=1})
-	end,
-	get_staticdata = function(self)
-		return minetest.serialize(self.poscube)
-	end,
-	on_punch = function(self, hitter)
-		self.object:remove()
-	end,
-	on_rightclick = function(self, clicker)
-		local pos = self.poscube
-		local mp = minetest.get_meta(pos):get_int("p")
-		if mp < 4 then
-			minetest.get_meta(pos):set_int("p",mp+1)
-		else
-			minetest.get_meta(pos):set_int("p",1)
-		end
-		affichage(pos)
 	end,
 })
 
