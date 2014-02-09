@@ -119,6 +119,7 @@ minetest.register_node("mini_economique:socle", {
 				minetest.get_meta(pos):set_string("item2",minetest.serialize(item))
 				affichage (pos)
 			end
+		end -- coorection
 	end,
 	can_dig = function(pos,player)
 		local mplayer = minetest.get_meta(pos):get_string("player")
